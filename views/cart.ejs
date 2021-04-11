@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/cart.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <title>Cart</title>
+</head>
+
+<body ng-app="app">
+    <div class="container" ng-controller="control">
+        <section id="cart" ng-repeat="item in cart">
+            <article class="product">
+                <header>
+                    <a class="remove">
+                        <img src="./img/gallery/{{item.img}}" alt="">
+                        <a href="/deleteCart/{{item._id}}">
+                            <h3>REMOVE</h3>
+                        </a>
+                    </a>
+                </header>
+
+                <div class="content">
+                    <p>Name: {{item.name |uppercase}}</p>
+                    <p>Description: {{item.description |uppercase}}</p>
+                    <p>Price: {{item.price |currency}}</p>
+                    <p>Amount: {{item.qty}}</p>
+                    <h1>Total: {{item.qty * item.price | currency}} </h1>
+                </div>
+
+
+            </article>
+            <hr>
+        </section>
+
+    </div>
+
+    <footer id="site-footer" ng-controller="total">
+        <div class="container clearfix">
+            <div class="right">
+                <h1 class="total">Total: {{total() | currency}}</span>
+                </h1>
+                <a class="btn" href="pay">Checkout</a>
+            </div>
+            <div class="left">
+                <a class="btn" href="home">Continue Shopping</a>
+            </div>
+
+        </div>
+    </footer>
+    <script>
+        var app = angular.module('app', []);
+        app.controller('control', function($scope, $http) {
+            $http.get('/api/cart').then(function(res) {
+                console.log(res)
+                $scope.cart = res.data
+                console.log(res.data)
+            });
+        });
+        app.controller('total', function($scope, $http) {
+            $http.get('/api/cart').then(function(res) {
+                $scope.total = function() {
+                        var total = 0;
+                        (res.data).forEach(element => {
+                            total += element.price * element.qty
+                        });
+                        return total
+                    }
+                    /* post total write database*/
+            });
+
+
+        })
+    </script>
+</body>
+
+</html>
